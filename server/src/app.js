@@ -2,10 +2,17 @@ const mongoose = require("mongoose");
 const express = require("express");
 const cors = require("cors");
 const { celebrate, Joi, errors, Segments } = require("celebrate");
+const { auth } = require('express-oauth2-jwt-bearer');
+
 const PropertyModel = require("./models/PropertyModel");
 const formatProperty = require("./formatProperty");
 
 const app = express();
+
+const checkJwt = auth({
+  audience: 'https://housetricks.com',
+  issuerBaseURL: `https://dev-67v1j53bpc2usven.au.auth0.com/`,
+});
 
 app.use(cors());
 
@@ -13,6 +20,7 @@ app.use(express.json());
 
 app.post(
   "/properties",
+  checkJwt,
   celebrate({
     [Segments.BODY]: Joi.object().keys({
       description: Joi.string().required(),
@@ -24,8 +32,13 @@ app.post(
   }),
   async (req, res, next) => {
     try {
-      const { body } = req;
-      const property = new PropertyModel(body);
+      const { body, auth } = req;
+      const propertybody = {
+        createdBy: auth.payload.sub,
+        ...body,
+     
+      }
+      const property = new PropertyModel(propertybody);
       await property.save();
       return res.status(201).send(formatProperty(property));
     } catch (error) {
