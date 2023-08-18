@@ -32,8 +32,13 @@ app.post(
   }),
   async (req, res, next) => {
     try {
-      const { body } = req;
-      const property = new PropertyModel(body);
+      const { body, auth } = req;
+      const propertybody = {
+        createdBy: auth.payload.sub,
+        ...body,
+     
+      }
+      const property = new PropertyModel(propertybody);
       await property.save();
       return res.status(201).send(formatProperty(property));
     } catch (error) {
