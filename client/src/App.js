@@ -1,7 +1,7 @@
 import "./App.css";
 import { Routes, Route } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
-import ProtectedRoute from "./auth/ProtectedRoute";
+// import ProtectedRoute from "./auth/ProtectedRoute";
 import Header from "./components/Header";
 import AddProperty from "./components/AddProperty";
 import Properties from "./components/Properties";
